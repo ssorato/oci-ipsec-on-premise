@@ -1,0 +1,41 @@
+# Left: Your local Libreswan CPE
+# Right: The Oracle VPN headend
+
+# ike=aes_cbc256-sha2_256;modp1536
+# phase2alg=aes_cbc256-sha2_256
+
+conn oracle-tunnel-1
+    leftid={{ local_public_ip }}
+    left={{ local_private_ip }}
+    right={{ remote_public_ip_tunel1 }}
+    authby=secret
+    leftsubnet={{ local_subnet }}
+    rightsubnet={{ remote_subnet }}
+    auto=start
+    mark=5/0xffffffff # Needs to be unique across all tunnels
+    vti-interface=vti1
+    vti-routing=yes
+    ikev2=insist # To use IKEv2, change to ikev2=insist
+    ike=aes_cbc256-sha2_256;{{ phase_two_dh_group | replace('GROUP','dh') }}
+    phase2alg=aes_cbc256-sha2_256
+    encapsulation=yes
+    ikelifetime={{ phase_one_lifetime }}s
+    salifetime={{ phase_two_lifetime }}s
+
+conn oracle-tunnel-2
+    leftid={{ local_public_ip }}
+    left={{ local_private_ip }}
+    right={{ remote_public_ip_tunel2 }}
+    authby=secret
+    leftsubnet={{ local_subnet }}
+    rightsubnet={{ remote_subnet }}
+    auto=start
+    mark=6/0xffffffff # Needs to be unique across all tunnels
+    vti-interface=vti2
+    vti-routing=no
+    ikev2=insist # To use IKEv2, change to ikev2=insist
+    ike=aes_cbc256-sha2_256;{{ phase_two_dh_group | replace('GROUP','dh') }}
+    phase2alg=aes_cbc256-sha2_256
+    encapsulation=yes
+    ikelifetime={{ phase_one_lifetime }}s
+    salifetime={{ phase_two_lifetime }}s

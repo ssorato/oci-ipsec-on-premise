@@ -1,0 +1,82 @@
+- name: Install Libreswan
+  hosts: vm-sbox-vpn
+  become: yes
+  tasks:
+
+    - name: Enable IP forwarding
+      ansible.builtin.copy:
+        src: sysctl.conf
+        dest: /etc/sysctl.conf
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+
+    - name: Install Libreswan
+      ansible.builtin.yum:
+        name: libreswan
+        state: present
+
+    - name: Configure IpSec secrets
+      ansible.builtin.template:
+        src: oci-ipsec.secrets.j2
+        dest: /etc/ipsec.d/oci-ipsec.secrets
+        owner: root
+        group: root
+        mode: '0600'
+        backup: yes
+      tags:
+        - ipsec_conf
+
+    - name: Configure IpSec tunnels
+      ansible.builtin.template:
+        src: oci-ipsec.conf.j2
+        dest: /etc/ipsec.d/oci-ipsec.conf
+        owner: root
+        group: root
+        mode: '0640'
+        backup: yes
+      tags:
+        - ipsec_conf
+
+    - name: Start tunnels
+      ansible.builtin.systemd_service:
+        state: restarted
+        name: ipsec
+      tags:
+        - ipsec_conf
+
+    - name: Get tunnels status
+      shell: ipsec whack --trafficstatus
+      register: tunels_status
+      tags:
+        - ipsec_status
+
+    - name: Show tunnels status
+      debug:
+        msg: "{{ tunels_status.stdout.split('\n') }}" 
+      tags:
+        - ipsec_status
+
+    - name: Ping remote vm
+      shell: |
+        ping -c 5 {{ remote_private_ip }}
+      register: ping
+      tags:
+        - ping
+
+    - name: Ping result
+      debug:
+        msg: "{{ ping.stdout.split('\n') }}" 
+      tags:
+        - ping
+
+    - name: Copy private ssh key to Azure vm
+      copy:
+        src: '{{ ansible_ssh_private_key_file }}'
+        dest: '/home/{{ ansible_user }}/.ssh'
+        owner: '{{ ansible_user }}'
+        group: '{{ ansible_user }}'
+        mode: '0600'
+      tags:
+        - ssh_key
