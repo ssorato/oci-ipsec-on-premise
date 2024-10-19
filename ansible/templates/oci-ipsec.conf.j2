@@ -16,7 +16,7 @@ conn oracle-tunnel-1
     vti-interface=vti1
     vti-routing=yes
     ikev2=insist # To use IKEv2, change to ikev2=insist
-    ike=aes_cbc256-sha2_256;{{ phase_two_dh_group | replace('GROUP','dh') }}
+    ike=aes_cbc256-sha2_256;{{ phase_one_dh_group | replace('GROUP','dh') }}
     phase2alg=aes_cbc256-sha2_256
     encapsulation=yes
     ikelifetime={{ phase_one_lifetime }}s
