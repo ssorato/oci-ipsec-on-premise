@@ -10,18 +10,18 @@ Connect OCI with on-premise ( an Azure VM ) using IpSec VPN
 ## Terraform
 
 ```bash
-$ export TF_VAR_tenancy_ocid="<tenancy ocid>"
-$ export TF_VAR_user_ocid="<user ocid>"
+$ export TF_VAR_oci_tenancy_ocid="<tenancy ocid>"
+$ export TF_VAR_oci_user_ocid="<user ocid>"
 $ export TF_VAR_oci_private_key_path="<user ssh private key>"
 $ export TF_VAR_oci_key_fingerprint="<user ssh private key fingerprint>"
-$ export TF_VAR_oci_compartment_ocid = "<OCI compartment id>"
+$ export TF_VAR_oci_compartment_ocid="<OCI compartment id>"
 
 $ export ARM_CLIENT_ID="<azure service principal client id>"
 $ export ARM_CLIENT_SECRET="<azure service principal client id>"
 $ export ARM_SUBSCRIPTION_ID="<azure subscription id>"
 $ export ARM_TENANT_ID="<azure tenant id>"
 
-$ export TF_VAR_ipsec_shared_secret  = "<IpSec shared secret>"
+$ export TF_VAR_ipsec_shared_secret="<IpSec shared secret>"
 
 $ cd terraform
 $ terraform init
@@ -35,7 +35,7 @@ $ cd ..
 
 ```bash
 $ cd ansible
-$ ansible-playbook -i ansible/inventories main.yaml
+$ ansible-playbook -i inventories main.yaml
 $ cd ..
 ```
 

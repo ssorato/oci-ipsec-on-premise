@@ -40,7 +40,7 @@
         - ipsec_conf
 
     - name: Start tunnels
-      ansible.builtin.systemd_service:
+      ansible.builtin.service:
         state: restarted
         name: ipsec
       tags:
